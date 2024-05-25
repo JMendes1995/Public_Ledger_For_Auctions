@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Auction House Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://netdna.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <style type="text/css">
+        body {
+            margin-top: 70px;
+            background-color: #121212;
+            color: #33ff33;
+            font-family: 'Courier New', monospace;
+            text-align: center;
+        }
+        .profile-info, .main-box {
+            background-color: #222;
+            padding: 10px;
+            border: 1px dashed #33ff33;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            display: block;
+        }
+        .table-hover>tbody>tr:hover>td,
+        .table-hover>tbody>tr:hover>th {
+            background-color: #333;
+        }
+        .table thead>tr>th,
+        .table tbody>tr>td {
+            border-bottom: 1px solid #444;
+            background-color: #222;
+            text-align: center;
+        }
+        h2, .profile-info {
+            color: #33ff33;
+        }
+        .logout-button, .bid-button {
+            background: none;
+            border: 1px solid #33ff33;
+            border-radius: 4px;
+            color: #33ff33;
+            padding: 5px 10px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+        .modal-content {
+            background-color: #121212;
+            color: #33ff33;
+            border: 1px dashed #33ff33;
+        }
+        .modal-header, .modal-body, .modal-footer {
+            border-bottom: 1px dotted #333;
+        }
+        .modal-header .close {
+            color: #33ff33;
+        }
+        .modal-title {
+            color: #33ff33;
+        }
+        input[type="number"], .form-control {
+            background-color: #222;
+            border: 1px solid #333;
+            color: #33ff33;
+        }
+        .btn {
+            background-color: transparent;
+            color: #33ff33;
+            border: 1px solid #33ff33;
+        }
+        .btn:hover {
+            background-color: #333;
+            color: #fff;
+        }
+        .btn-success {
+            border-color: #33cc33;
+            background-color: #33cc33;
+        }
+        .btn-success:hover {
+            background-color: #29a329;
+            border-color: #28a028;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- User Profile -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="profile-info">
+                    <span>Username: JohnDoe </span> |
+                    <span>Credits: $5000 </span> |
+                    <button class="logout-button">Logout</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main content area -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="main-box clearfix">
+                    <h2>Auction History</h2>
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="auctionHistoryTable">
+                            <thead>
+                                <tr>
+                                    <th>Product Name</th>
+                                    <th>Bid Price</th>
+                                    <th>End Time</th>
+                                    <th>Auction State</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="main-box clearfix">
+                    <h2>Following Items</h2>
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="followingItemsTable">
+                            <thead>
+                                <tr>
+                                    <th>Product Name</th>
+                                    <th>Bid Price</th>
+                                    <th>End Time</th>
+                                    <th>Auction State</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Full-width table for Open Auctions -->
+        <div class="col-md-12">
+            <div class="main-box clearfix">
+                <h2>Open Auctions</h2>
+                <div class="table-responsive">
+                    <table class="table table-hover" id="openAuctionsTable">
+                        <thead>
+                            <tr>
+                                <th>Product Name</th>
+                                <th>Bid Price</th>
+                                <th>End Time</th>
+                                <th>Auction State</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div> 
+            </div>
+        </div>
+    </div>
+
+    <!-- Bid Modal -->
+    <div class="modal fade" id="bidModal" tabindex="-1" role="dialog" aria-labelledby="bidModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+
+                    <h4 class="modal-title" id="myModalLabel">Place Your Bid</h4>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="bidAmount">Bid Amount</label>
+                            <input type="number" class="form-control" id="bidAmount">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-success" id="placeBidButton">Place Bid</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Item Details Modal -->
+    <div class="modal fade" id="itemDetailsModal" tabindex="-1" role="dialog" aria-labelledby="itemDetailsModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+
+                    <h4 class="modal-title" id="itemDetailsModalLabel">Item Details</h4>
+                </div>
+                <div class="modal-body">
+                    <div id="itemDetailsContent"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script src="https://netdna.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="javascript/script.js"></script>
+    <script>
+        $(document).ready(function() {
+            function fetchAndDisplayAuctions() {
+                $.getJSON('/api/auctions', function(data) {
+                    var auctions = data.auctions;
+                    var auctionHistoryHtml = '';
+                    var followingItemsHtml = '';
+                    var openAuctionsHtml = '';
+
+                    Object.keys(auctions).forEach(function(key) {
+                        var auction = auctions[key];
+                        var actionButtonHtml = '<td><button class="bid-button fa fa-money" onclick="showBidModal()"></button></td>';
+                        var itemDetailsButtonHtml = '<td><button class="btn btn-info" onclick="showItemDetailsModal(\'' + key + '\')">Details</button></td>';
+                        var rowHtml = '<tr>' +
+                            '<td onclick="showItemDetailsModal(\'' + key + '\')">' + auction.item_name + '</td>' +
+                            '<td>$' + (auction.bids.length > 0 ? auction.bids[auction.bids.length - 1].amount : auction.starting_bid) + '</td>' +
+                            '<td>' + new Date(auction.end_time * 1000).toLocaleString() + '</td>' +
+                            '<td>' + (auction.active ? 'Active' : 'Closed') + '</td>';
+
+                        if (!auction.active) {
+                            auctionHistoryHtml += rowHtml + '</tr>';
+                        } else {
+                            openAuctionsHtml += rowHtml + actionButtonHtml + '</tr>';
+                            followingItemsHtml += rowHtml + actionButtonHtml + '</tr>';
+                        }
+                    });
+
+                    $('#auctionHistoryTable tbody').html(auctionHistoryHtml);
+                    $('#followingItemsTable tbody').html(followingItemsHtml);
+                    $('#openAuctionsTable tbody').html(openAuctionsHtml);
+                });
+            }
+
+            fetchAndDisplayAuctions();
+            setInterval(fetchAndDisplayAuctions, 30000); // Refresh data every 30 seconds
+
+            window.showBidModal = function() {
+                $('#bidModal').modal('show');
+            }
+
+            window.showItemDetailsModal = function(auctionId) {
+                $.getJSON('/api/auctions/' + auctionId, function(data) {
+                    var itemDetails = data;
+                    var detailsHtml = '<p><strong>Item Name:</strong> ' + itemDetails.item_name + '</p>' +
+                                      '<p><strong>Start Time:</strong> ' + new Date(itemDetails.start_time * 1000).toLocaleString() + '</p>' +
+                                      '<p><strong>End Time:</strong> ' + new Date(itemDetails.end_time * 1000).toLocaleString() + '</p>' +
+                                      '<p><strong>Starting Bid:</strong> ' + itemDetails.starting_bid + '</p>' +
+                                      '<p><strong>Current Highest Bid:</strong> ' + (itemDetails.bids.length > 0 ? itemDetails.bids[itemDetails.bids.length - 1].amount : 'No bids yet') + '</p>' +
+                                      '<p><strong>Bid History:</strong> ' + itemDetails.bids.map(bid => 'Bidder: ' + bid.bidder + ', Amount: ' + bid.amount).join(', ') + '</p>';
+                    $('#itemDetailsContent').html(detailsHtml);
+                    $('#itemDetailsModal').modal('show');
+                });
+            }
+        });
+    </script>
+</body>
+</html>
